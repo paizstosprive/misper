@@ -1,0 +1,56 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Bonjour <%= user.firstName %></h1>
+      <p>Suivez votre progression et votre acces premium.</p>
+    </div>
+    <div class="stats-grid">
+      <article class="card metric-card">
+        <h3>Abonnement</h3>
+        <% if (user.hasActiveSubscription) { %>
+          <p>Actif jusqu'au <strong><%= helpers.formatDate(user.subscriptionEndDate) %></strong></p>
+        <% } else if (user.subscriptionEndDate) { %>
+          <p>Expire</p>
+        <% } else { %>
+          <p>Aucun abonnement actif</p>
+        <% } %>
+      </article>
+      <article class="card metric-card">
+        <h3>Series gratuites</h3>
+        <p><strong>2 series fixes</strong> toujours disponibles</p>
+      </article>
+      <article class="card metric-card">
+        <h3>Premium</h3>
+        <% if (user.hasActiveSubscription) { %>
+          <p>Examen type 50 questions + chapitres complets debloques.</p>
+        <% } else { %>
+          <p>Abonnez-vous pour acceder a l'examen type et aux series completes par chapitre.</p>
+        <% } %>
+      </article>
+      <article class="card metric-card">
+        <h3>Action</h3>
+        <a class="btn btn-primary" href="/quiz/start">Demarrer un quiz</a>
+      </article>
+    </div></br></br>
+
+    <div class="card table-card">
+      </br>
+      <h2>Historique recent</h2>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Chapitre</th><th>Score</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% attempts.forEach((attempt) => { %>
+            <tr>
+              <td><%= helpers.formatDate(attempt.completedAt) %></td>
+              <td><%= helpers.formatAttemptLabel(attempt) %></td>
+              <td><%= attempt.score %>/<%= attempt.totalQuestions %></td>
+              <td><a href="/quiz/result/<%= attempt.id %>">Voir</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

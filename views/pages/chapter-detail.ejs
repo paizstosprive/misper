@@ -1,0 +1,138 @@
+<section class="chapter-reader-hero">
+  <div class="container chapter-reader-grid">
+    <div>
+      <a class="reader-back-link" href="/chapters">Retour au sommaire</a>
+      <span class="eyebrow">Chapitre <%= chapter.code %> - <%= study.level %></span>
+      <h1><%= chapter.title %></h1>
+      <p class="lead"><%= study.intro %></p>
+      <div class="reader-meta-row">
+        <span class="pill pill-progress"><%= study.readingTime %></span>
+        <span class="pill pill-free"><%= questionCount %> questions liees</span>
+      </div>
+      <div class="study-hero-actions">
+        <a class="btn btn-ghost" href="/chapters/<%= chapter.code %>.pdf" download>Télécharger ce chapitre PDF</a>
+        <a class="btn btn-ghost" href="/chapters/book.pdf" download>Télécharger tout le livre</a>
+      </div>
+    </div>
+    <div class="reader-cover">
+      <img src="<%= study.image %>" alt="Illustration du chapitre <%= chapter.code %>" />
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container reader-layout">
+    <aside class="reader-sidebar">
+      <div class="reader-sidebar-inner">
+        <span class="eyebrow">Dans ce chapitre</span>
+        <nav class="reader-toc">
+          <% study.sections.forEach((section, index) => { %>
+            <a href="#section-<%= index + 1 %>"><%= index + 1 %>. <%= section.title %></a>
+          <% }) %>
+          <a href="#pieges">Pieges d'examen</a>
+          <a href="#revision">Checklist</a>
+        </nav>
+      </div>
+    </aside>
+
+    <article class="reader-content">
+      <section class="reader-card">
+        <span class="eyebrow">Objectifs</span>
+        <h2>Ce que vous devez maitriser</h2>
+        <ul class="study-list">
+          <% study.objectives.forEach((objective) => { %>
+            <li><%= objective %></li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <% study.sections.forEach((section, index) => { %>
+        <section class="reader-card reader-section" id="section-<%= index + 1 %>">
+          <div class="reader-section-head">
+            <span class="reader-section-index"><%= index + 1 %></span>
+            <div>
+              <span class="eyebrow">Cours</span>
+              <h2><%= section.title %></h2>
+            </div>
+          </div>
+
+          <% if (section.image) { %>
+            <img class="reader-illustration" src="<%= section.image %>" alt="Illustration: <%= section.title %>" loading="lazy" />
+          <% } %>
+
+          <div class="reader-copy">
+            <% section.paragraphs.forEach((paragraph) => { %>
+              <p><%= paragraph %></p>
+            <% }) %>
+          </div>
+
+          <% if (section.formulas && section.formulas.length) { %>
+            <div class="reader-formula-grid">
+              <% section.formulas.forEach((formula) => { %>
+                <div class="reader-formula-card">
+                  <span><%= formula.label %></span>
+                  <strong><%= formula.value %></strong>
+                  <p><%= formula.note %></p>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <% if (section.examples && section.examples.length) { %>
+            <div class="reader-examples">
+              <strong>Exemples pratiques</strong>
+              <% section.examples.forEach((example) => { %>
+                <div class="reader-example-row">
+                  <span><%= example.title %></span>
+                  <p><%= example.text %></p>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <div class="reader-rule-box">
+            <strong>A retenir</strong>
+            <ul class="study-list">
+              <% section.bullets.forEach((bullet) => { %>
+                <li><%= bullet %></li>
+              <% }) %>
+            </ul>
+          </div>
+        </section>
+      <% }) %>
+
+      <section class="reader-card reader-highlight" id="pieges">
+        <span class="eyebrow">Examen</span>
+        <h2>Pieges frequents</h2>
+        <ul class="study-list">
+          <% study.examTips.forEach((tip) => { %>
+            <li><%= tip %></li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <section class="reader-card" id="revision">
+        <span class="eyebrow">Revision</span>
+        <h2>Checklist avant de passer aux questions</h2>
+        <ul class="study-checklist">
+          <% study.checklist.forEach((item) => { %>
+            <li><span></span><%= item %></li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <nav class="reader-pagination">
+        <% if (previousChapter) { %>
+          <a class="btn btn-ghost" href="/chapters/<%= previousChapter.code %>">Chapitre precedent</a>
+        <% } else { %>
+          <span></span>
+        <% } %>
+        <% if (nextChapter) { %>
+          <a class="btn btn-primary" href="/chapters/<%= nextChapter.code %>">Chapitre suivant</a>
+        <% } else { %>
+          <a class="btn btn-primary" href="/quiz/start">Lancer un examen blanc</a>
+        <% } %>
+      </nav>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,87 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Choisir un mode d'entrainement</h1>
+      <p>Deux series gratuites fixes de 15 questions restent toujours accessibles. L'abonnement debloque l'examen type et les chapitres complets.</p>
+    </div>
+    <div class="mode-grid">
+      <% freeSeries.forEach((serie) => { %>
+        <div class="mode-card mode-card-free">
+          <div class="mode-card-top">
+            <span class="eyebrow">Gratuit</span>
+            <span class="pill pill-free">Toujours disponible</span>
+          </div>
+          <h2><%= serie.name %></h2>
+          <p>15 questions fixes, identiques pour tous les utilisateurs. Ideal pour s'entrainer rapidement sans abonnement.</p>
+          <ul class="feature-list">
+            <li>Questions toujours identiques</li>
+            <li>Correction immediate</li>
+            <li>Accessible sans limite de temps</li>
+          </ul>
+          <form action="/quiz/start" method="post" class="stack">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="mode" value="<%= serie.code %>" />
+            <button class="btn btn-primary" type="submit">Lancer</button>
+          </form>
+        </div>
+      <% }) %>
+      <div class="mode-card mode-card-premium <%= !currentUser?.hasActiveSubscription ? 'is-locked' : '' %>">
+        <div class="mode-card-top">
+          <span class="eyebrow">Premium</span>
+          <span class="pill pill-premium"><%= currentUser?.hasActiveSubscription ? 'Debloque' : 'Verrouille' %></span>
+        </div>
+        <h2>Examen type</h2>
+        <p>50 questions aleatoires sur l'ensemble de la base.</p>
+        <ul class="feature-list">
+          <li>Format proche d'un vrai examen</li>
+          <li>Questions melangees aleatoirement</li>
+          <li>Accessible pendant la duree de l'abonnement</li>
+        </ul>
+        <form action="/quiz/start" method="post" class="stack">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <input type="hidden" name="mode" value="exam" />
+          <% if (currentUser?.hasActiveSubscription) { %>
+            <button class="btn btn-primary" type="submit">Lancer l'examen</button>
+          <% } else { %>
+            <a class="btn btn-primary" href="/pricing">Debloquer le premium</a>
+          <% } %>
+        </form>
+      </div>
+    </div>
+
+    <div class="mode-card mode-card-wide mode-card-premium <%= !currentUser?.hasActiveSubscription ? 'is-locked' : '' %>">
+      <div class="mode-card-top">
+        <span class="eyebrow">Premium</span>
+        <span class="pill pill-premium"><%= currentUser?.hasActiveSubscription ? 'Debloque' : 'Verrouille' %></span>
+      </div>
+      <div class="mode-wide-grid">
+        <div>
+          <h2>Series completes par chapitre</h2>
+          <p>Accedez a toutes les questions du chapitre choisi pendant la duree de votre abonnement.</p>
+          <ul class="feature-list">
+            <li>Travail complet chapitre par chapitre</li>
+            <li>Toutes les questions du theme choisi</li>
+            <li>Ideal pour une revision ciblee</li>
+          </ul>
+        </div>
+        <form action="/quiz/start" method="post" class="stack">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <input type="hidden" name="mode" value="chapter" />
+          <label>Chapitre
+            <select name="chapterCode" required>
+              <option value="">Choisir un chapitre</option>
+              <% chapters.forEach((chapter) => { %>
+                <option value="<%= chapter.code %>"><%= chapter.code %> - <%= chapter.title %></option>
+              <% }) %>
+            </select>
+          </label>
+          <% if (currentUser?.hasActiveSubscription) { %>
+            <button class="btn btn-primary" type="submit">Lancer la serie chapitre</button>
+          <% } else { %>
+            <a class="btn btn-primary" href="/pricing">Voir les formules</a>
+          <% } %>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

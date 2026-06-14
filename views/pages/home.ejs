@@ -1,0 +1,86 @@
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <img class="hero-logo" src="/images/permisgo-logo.svg" alt="Permis-Go" />
+      <span class="eyebrow">Numero 1 en Belgique</span>
+      <h1>L'entrainement intelligent pour reussir ton permis theorique</h1>
+      <p class="lead">QCM officiels, explications claires et suivi de progression pour t'entrainer ou tu veux, quand tu veux. Choisis le pass qui correspond a ton rythme.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/register">Commencer maintenant</a>
+        <a class="btn btn-ghost" href="/pricing">Voir les pass</a>
+      </div>
+      <div class="hero-metrics">
+        <div><strong><%= stats.questionCount %>+</strong><span>questions</span></div>
+        <div><strong><%= stats.chapterCount %></strong><span>chapitres</span></div>
+        <div><strong>2 pass</strong><span>3 jours ou 1 mois</span></div>
+      </div>
+    </div>
+    <div class="phone-stage" aria-hidden="true">
+      <div class="phone">
+        <div class="phone-bar">Question 7 / 15</div>
+        <div class="phone-screen">
+          <p>Que signifie ce panneau ?</p>
+          <div class="traffic-sign">
+            <span></span>
+            <span></span>
+          </div>
+          <div class="answer answer-correct">A Interdiction de depasser</div>
+          <div class="answer">B Route a double sens</div>
+          <div class="answer">C Sens unique</div>
+          <div class="good-answer">Bonne reponse !</div>
+        </div>
+      </div>
+      <div class="free-badge">2 series<br />gratuites</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Prepare-toi comme a l'examen</h2>
+      <p>Un parcours simple pour progresser vite avec les questions qui comptent.</p>
+    </div>
+    <div class="grid-3">
+      <article class="card feature-card"><span class="feature-icon">OK</span><h3>QCM officiels</h3><p>Basee sur les questions utiles pour l'examen theorique belge.</p></article>
+      <article class="card feature-card"><span class="feature-icon">A</span><h3>Explications claires</h3><p>Comprends chaque reponse et corrige tes erreurs rapidement.</p></article>
+      <article class="card feature-card"><span class="feature-icon">%</span><h3>Suivi de progression</h3><p>Analyse tes resultats et ameliore-toi au quotidien.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="promo-strip">
+  <div class="container promo-strip-inner">
+    <strong>Prepare-toi comme a l'examen, ou tu veux, quand tu veux !</strong>
+    <span>100% en ligne</span>
+    <span>A ton rythme</span>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2>Choisis l'offre qui te convient</h2>
+      <p>Choisis un acces court pour reviser vite ou un mois complet pour avancer a ton rythme.</p>
+    </div>
+    <div class="pricing-grid">
+      <% plans.forEach((plan) => { %>
+        <article class="price-card">
+          <% if (plan.code === 'pass5days') { %>
+            <span class="popular-label">Le plus populaire</span>
+          <% } %>
+          <h3><%= plan.name %></h3>
+          <div class="price"><%= helpers.eurosFromCents(plan.amount) %></div>
+          <p><%= plan.description %></p>
+          <ul class="feature-list">
+            <li>Acces a toutes les series de questions</li>
+            <li>Explications detaillees</li>
+            <li>Suivi de progression avance</li>
+            <li>Chapitres complets</li>
+          </ul>
+          <a class="btn btn-primary" href="<%= isAuthenticated ? '/pricing' : '/register' %>">Choisir cette offre</a>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

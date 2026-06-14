@@ -1,0 +1,23 @@
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/" aria-label="Permis-Go">
+      <img src="/images/permisgo-logo.svg" alt="Permis-Go" />
+    </a>
+    <nav class="nav-links">
+      <a href="/chapters">Chapitres</a>
+      <a href="/pricing">Tarifs</a>
+      <% if (isAuthenticated) { %>
+        <a href="/dashboard">Dashboard</a>
+        <% if (isAdmin) { %><a href="/admin">Admin</a><% } %>
+        <a href="/quiz/start" class="btn btn-ghost">Lancer un quiz</a>
+        <form action="/logout" method="post" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button class="btn btn-primary" type="submit">Deconnexion</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Connexion</a>
+        <a class="btn btn-primary" href="/register">Inscription</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

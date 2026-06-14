@@ -1,0 +1,23 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h1>Utilisateurs</h1></div>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nom</th><th>Email</th><th>Role</th><th>Abonnement</th></tr>
+        </thead>
+        <tbody>
+          <% users.forEach((user) => { %>
+            <tr>
+              <td><%= user.id %></td>
+              <td><%= user.firstName %> <%= user.lastName %></td>
+              <td><%= user.email %></td>
+              <td><%= user.role %></td>
+              <td><%= user.hasActiveSubscription ? 'Actif' : 'Non' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

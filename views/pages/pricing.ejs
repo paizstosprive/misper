@@ -1,0 +1,35 @@
+<section class="section">
+  <div class="container narrow">
+    <div class="section-head">
+      <h1>Choisis ton pass</h1>
+      <p>Les 2 series gratuites fixes restent toujours disponibles. Les pass debloquent l'examen type 50 questions et les chapitres complets.</p>
+    </div>
+    <div class="pricing-grid">
+      <% plans.forEach((plan) => { %>
+        <article class="price-card">
+          <% if (plan.code === 'pass5days') { %>
+            <span class="popular-label">Le plus populaire</span>
+          <% } %>
+          <h2><%= plan.name %></h2>
+          <div class="price"><%= helpers.eurosFromCents(plan.amount) %></div>
+          <p><%= plan.description %></p>
+          <ul class="compact-list">
+            <li>Examen type aleatoire de 50 questions</li>
+            <li>Series completes par chapitre</li>
+            <li>Resultats detailes</li>
+            <li>Historique utilisateur</li>
+          </ul>
+          <% if (isAuthenticated) { %>
+            <form action="/subscription/checkout" method="post">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <input type="hidden" name="planCode" value="<%= plan.code %>" />
+              <button class="btn btn-primary" type="submit">Payer avec Stripe</button>
+            </form>
+          <% } else { %>
+            <a class="btn btn-primary" href="/register">Creer un compte</a>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

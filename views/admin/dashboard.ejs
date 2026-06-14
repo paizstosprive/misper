@@ -1,0 +1,16 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Back-office</h1>
+      <p>Vue d'ensemble du produit.</p>
+    </div>
+    <div class="grid-3">
+      <article class="card"><h3>Utilisateurs</h3><p><strong><%= metrics.users %></strong></p></article>
+      <article class="card"><h3>Abonnes actifs</h3><p><strong><%= metrics.activeSubscribers %></strong></p></article>
+      <article class="card"><h3>Paiements</h3><p><strong><%= metrics.payments %></strong></p></article>
+      <article class="card"><h3>Questions</h3><p><strong><%= metrics.questions %></strong></p></article>
+      <article class="card"><h3>Revenus</h3><p><strong><%= helpers.eurosFromCents(metrics.revenue) %></strong></p></article>
+      <article class="card"><h3>Actions</h3><p><a href="/admin/questions">Gerer les questions</a></p></article>
+    </div>
+  </div>
+</section>

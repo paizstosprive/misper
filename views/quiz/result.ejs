@@ -1,0 +1,25 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Resultat</h1>
+      <p>Score final: <strong><%= attempt.score %>/<%= attempt.totalQuestions %></strong></p>
+    </div>
+    <div class="stack-lg">
+      <% attempt.answers.sort((a, b) => a.questionOrder - b.questionOrder).forEach((answer) => { %>
+        <article class="result-card <%= answer.isCorrect ? 'result-card-success' : 'result-card-error' %>">
+          <div class="result-card-top">
+            <span class="pill <%= answer.isCorrect ? 'pill-free' : 'pill-result-error' %>">
+              <%= answer.isCorrect ? 'Bonne reponse' : 'Mauvaise reponse' %>
+            </span>
+          </div>
+          <h3><%= answer.questionOrder %>. <%= answer.question.questionText %></h3>
+          <p>Votre reponse: <strong><%= answer.selectedChoice || 'Aucune' %></strong></p>
+          <p>Bonne reponse: <strong><%= answer.correctChoice %> - <%= answer.question['choice' + answer.correctChoice] %></strong></p>
+          <p class="result-explanation <%= answer.isCorrect ? 'result-explanation-success' : 'result-explanation-error' %>">
+            <%= answer.question.explanation %>
+          </p>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

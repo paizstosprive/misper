@@ -1,0 +1,44 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head row-between">
+      <div>
+        <h1>Questions</h1>
+        <p>Gestion du catalogue.</p>
+      </div>
+      <a class="btn btn-primary" href="/admin/questions/new">Nouvelle question</a>
+    </div>
+    <form class="inline-filters" method="get">
+      <select name="chapter">
+        <option value="">Tous les chapitres</option>
+        <% chapters.forEach((chapter) => { %>
+          <option value="<%= chapter.code %>" <%= selectedChapter === chapter.code ? 'selected' : '' %>><%= chapter.code %> - <%= chapter.title %></option>
+        <% }) %>
+      </select>
+      <button class="btn btn-ghost" type="submit">Filtrer</button>
+    </form>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Chapitre</th><th>Question</th><th>Image</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% questions.forEach((question) => { %>
+            <tr>
+              <td><%= question.id %></td>
+              <td><%= question.chapterCode %></td>
+              <td><%= question.questionText %></td>
+              <td><img class="thumb" src="<%= question.imagePath %>" alt="Question" /></td>
+              <td>
+                <a href="/admin/questions/<%= question.id %>/edit">Modifier</a>
+                <form class="inline-form" method="post" action="/admin/questions/<%= question.id %>?_method=DELETE">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button class="link-button" type="submit">Supprimer</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

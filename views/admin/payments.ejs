@@ -1,0 +1,23 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h1>Paiements</h1></div>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Utilisateur</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          <% payments.forEach((payment) => { %>
+            <tr>
+              <td><%= payment.id %></td>
+              <td><%= payment.user?.email || 'N/A' %></td>
+              <td><%= helpers.eurosFromCents(payment.amount) %></td>
+              <td><%= payment.status %></td>
+              <td><%= helpers.formatDate(payment.paidAt || payment.createdAt) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

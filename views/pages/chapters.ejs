@@ -1,0 +1,54 @@
+<section class="study-hero">
+  <div class="container study-hero-grid">
+    <div>
+      <span class="eyebrow">Livre virtuel</span>
+      <h1>Etudier la theorie avant les examens</h1>
+      <p class="lead">Chaque chapitre reprend les notions essentielles du permis B belge sous forme de cours complet: regles, situations typiques, pieges d'examen, illustrations et checklist de revision.</p>
+      <div class="study-hero-actions">
+        <a class="btn btn-primary" href="/chapters/A">Commencer le chapitre A</a>
+        <a class="btn btn-ghost" href="/chapters/book.pdf" download>Télécharger le livre PDF</a>
+        <a class="btn btn-ghost" href="/quiz/start">Faire un examen blanc</a>
+      </div>
+    </div>
+    <div class="study-summary-panel">
+      <span class="pill pill-progress"><%= chapters.length %> chapitres</span>
+      <strong>Progression conseillee</strong>
+      <p>Lisez un chapitre, retenez les pieges, puis testez-vous avec les questions correspondantes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Sommaire du livre</h2>
+      <p>Les chapitres sont organises pour passer de la lecture de la route aux fautes graves.</p>
+    </div>
+
+    <div class="chapter-book-grid">
+      <% chapters.forEach((chapter, index) => { %>
+        <article class="chapter-book-card">
+          <a class="chapter-book-link" href="/chapters/<%= chapter.code %>">
+            <div class="chapter-book-media">
+              <% if (chapter.study && chapter.study.image) { %>
+                <img src="<%= chapter.study.image %>" alt="Illustration du chapitre <%= chapter.code %>" loading="lazy" />
+              <% } %>
+              <span class="chapter-book-number"><%= String(index + 1).padStart(2, '0') %></span>
+            </div>
+            <div class="chapter-book-body">
+              <span class="eyebrow">Chapitre <%= chapter.code %></span>
+              <h3><%= chapter.title %></h3>
+              <% if (chapter.study) { %>
+                <p><%= chapter.study.intro %></p>
+                <div class="chapter-book-meta">
+                  <span><%= chapter.study.readingTime %> de lecture</span>
+                  <span><%= chapter.count %> questions pour s'entrainer</span>
+                </div>
+              <% } %>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
