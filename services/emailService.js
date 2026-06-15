@@ -1,12 +1,26 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
+const { Resend } = require('resend');
 const { SUBSCRIPTION_PLANS } = require('../utils/constants');
 const { formatDate, eurosFromCents } = require('../utils/formatters');
 
 let transporter;
+let resendClient;
 
 function isEmailEnabled() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
+  return Boolean(process.env.RESEND_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD));
+}
+
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+
+  return resendClient;
 }
 
 function getTransporter() {
@@ -38,9 +52,32 @@ function getFromAddress() {
 }
 
 async function sendMail({ to, subject, text, html, attachments = [] }) {
+  const resend = getResendClient();
+  if (resend) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: getFromAddress(),
+        to,
+        subject,
+        text,
+        html
+      });
+
+      if (error) {
+        console.error('Erreur envoi email Resend:', error.message || JSON.stringify(error));
+        return { ok: false, error: error.message || 'Erreur Resend' };
+      }
+
+      return { ok: true, messageId: data?.id };
+    } catch (error) {
+      console.error('Erreur envoi email Resend:', error.message);
+      return { ok: false, error: error.message };
+    }
+  }
+
   const mailer = getTransporter();
   if (!mailer) {
-    const message = 'Configuration SMTP absente.';
+    const message = 'Configuration email absente.';
     console.warn(`Email non envoye: ${message}`);
     return { ok: false, error: message };
   }
@@ -108,7 +145,7 @@ function renderEmailLayout({ eyebrow, title, intro, body, ctaLabel, ctaUrl }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 620px; overflow: hidden; border-radius: 18px; background: #ffffff; border: 1px solid #dce6f4;">
                 <tr>
                   <td style="padding: 22px 24px; background: #eef5ff;">
-                    <img src="cid:permisgo-email-logo" width="220" height="59" alt="PermisGo" style="display: block; width: 220px; max-width: 100%; height: 59px; max-height: 59px; border: 0; outline: none; text-decoration: none; margin: 0 0 8px;" />
+                    <img src="${logoImageSrc()}" width="220" height="59" alt="PermisGo" style="display: block; width: 220px; max-width: 100%; height: 59px; max-height: 59px; border: 0; outline: none; text-decoration: none; margin: 0 0 8px;" />
                     <div style="margin-top: 8px; color: #415173; font-size: 14px;">Reussis ton permis theorique</div>
                   </td>
                 </tr>
@@ -167,6 +204,18 @@ function logoAttachment() {
   };
 }
 
+function logoImageSrc() {
+  if (process.env.RESEND_API_KEY) {
+    return `${process.env.APP_URL || 'http://localhost:3000'}/images/permisgo-email-logo.png`;
+  }
+
+  return 'cid:permisgo-email-logo';
+}
+
+function emailAttachments() {
+  return process.env.RESEND_API_KEY ? [] : [logoAttachment()];
+}
+
 async function sendRegistrationEmail(user) {
   return sendMail({
     to: user.email,
@@ -191,7 +240,7 @@ async function sendRegistrationEmail(user) {
       ctaLabel: 'Acceder au tableau de bord',
       ctaUrl: dashboardUrl()
     }),
-    attachments: [logoAttachment()]
+    attachments: emailAttachments()
   });
 }
 
@@ -227,7 +276,7 @@ async function sendSubscriptionActivatedEmail({ user, subscription, payment }) {
       ctaLabel: 'Gerer mon compte',
       ctaUrl: settingsUrl()
     }),
-    attachments: [logoAttachment()]
+    attachments: emailAttachments()
   });
 }
 
@@ -255,7 +304,7 @@ async function sendDeletionRequestEmail(user) {
       ctaLabel: 'Voir mes parametres',
       ctaUrl: settingsUrl()
     }),
-    attachments: [logoAttachment()]
+    attachments: emailAttachments()
   });
 
   if (adminEmail) {
@@ -290,7 +339,7 @@ async function sendTestEmail(to) {
       ctaLabel: 'Ouvrir Permis-Go',
       ctaUrl: dashboardUrl()
     }),
-    attachments: [logoAttachment()]
+    attachments: emailAttachments()
   });
 }
 
