@@ -1,7 +1,9 @@
+const bcrypt = require('bcrypt');
 const { User, Question, QuizAttempt, Payment } = require('../models');
 const { CHAPTERS, SUBSCRIPTION_PLANS } = require('../utils/constants');
 const { studyChapters, getStudyChapter } = require('../utils/chapterStudyContent');
 const { generateStudyPdf } = require('../utils/studyPdfGenerator');
+const { sendDeletionRequestEmail } = require('../services/emailService');
 
 async function home(req, res) {
   const [questionCount, userCount] = await Promise.all([Question.count(), User.count()]);
@@ -25,6 +27,90 @@ async function dashboard(req, res) {
     user,
     attempts
   });
+}
+
+async function settings(req, res) {
+  const user = await User.findByPk(req.session.user.id);
+  const payments = await Payment.findAll({
+    where: { userId: user.id },
+    order: [['createdAt', 'DESC']],
+    limit: 10
+  });
+
+  res.render('pages/settings', {
+    title: 'Parametres',
+    user,
+    payments,
+    errors: [],
+    oldInput: {}
+  });
+}
+
+async function updateProfile(req, res) {
+  const user = await User.findByPk(req.session.user.id);
+  const firstName = req.body.firstName?.trim();
+  const lastName = req.body.lastName?.trim();
+  const email = req.body.email?.trim().toLowerCase();
+
+  if (!firstName || !lastName || !email) {
+    req.flash('error', 'Tous les champs du profil sont requis.');
+    return res.redirect('/settings');
+  }
+
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser && existingUser.id !== user.id) {
+    req.flash('error', 'Cette adresse email est deja utilisee.');
+    return res.redirect('/settings');
+  }
+
+  await user.update({ firstName, lastName, email });
+  req.session.user = {
+    ...req.session.user,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email
+  };
+
+  req.flash('success', 'Profil mis a jour.');
+  return res.redirect('/settings');
+}
+
+async function updatePassword(req, res) {
+  const user = await User.findByPk(req.session.user.id);
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    req.flash('error', 'Tous les champs du mot de passe sont requis.');
+    return res.redirect('/settings');
+  }
+
+  if (newPassword.length < 6) {
+    req.flash('error', 'Le nouveau mot de passe doit contenir au moins 6 caracteres.');
+    return res.redirect('/settings');
+  }
+
+  if (newPassword !== confirmPassword) {
+    req.flash('error', 'La confirmation du mot de passe ne correspond pas.');
+    return res.redirect('/settings');
+  }
+
+  if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+    req.flash('error', 'Mot de passe actuel incorrect.');
+    return res.redirect('/settings');
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await user.update({ passwordHash });
+
+  req.flash('success', 'Mot de passe mis a jour.');
+  return res.redirect('/settings');
+}
+
+async function requestAccountDeletion(req, res) {
+  const user = await User.findByPk(req.session.user.id);
+  sendDeletionRequestEmail(user);
+  req.flash('success', 'Votre demande de suppression a ete enregistree. Un administrateur pourra la traiter.');
+  return res.redirect('/settings');
 }
 
 function pricing(req, res) {
@@ -133,6 +219,10 @@ async function adminDashboard(req, res) {
 module.exports = {
   home,
   dashboard,
+  settings,
+  updateProfile,
+  updatePassword,
+  requestAccountDeletion,
   pricing,
   chapters,
   chapterDetail,

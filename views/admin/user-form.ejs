@@ -1,0 +1,91 @@
+<section class="section">
+  <div class="container narrow">
+    <div class="section-head row-between">
+      <div>
+        <h1>Modifier utilisateur</h1>
+        <p><%= user.email %></p>
+      </div>
+      <a class="btn btn-ghost" href="/admin/users">Retour</a>
+    </div>
+
+    <div class="card form-card">
+      <form method="post" action="<%= formAction %>" class="stack">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+        <div class="grid-2">
+          <label>
+            Prenom
+            <input type="text" name="firstName" value="<%= user.firstName %>" required />
+          </label>
+          <label>
+            Nom
+            <input type="text" name="lastName" value="<%= user.lastName %>" required />
+          </label>
+        </div>
+
+        <label>
+          Email
+          <input type="email" name="email" value="<%= user.email %>" required />
+        </label>
+
+        <div class="grid-2">
+          <label>
+            Role
+            <select name="role">
+              <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Utilisateur</option>
+              <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          </label>
+          <label>
+            Series gratuites utilisees
+            <input type="number" min="0" name="freeSeriesUsed" value="<%= user.freeSeriesUsed %>" />
+          </label>
+        </div>
+
+        <div class="admin-subscription-box">
+          <h2>Abonnement</h2>
+          <% if (user.hasActiveSubscription) { %>
+            <p>Acces actif jusqu'au <strong><%= helpers.formatDate(user.subscriptionEndDate) %></strong>.</p>
+          <% } else { %>
+            <p>Aucun acces premium actif.</p>
+          <% } %>
+        </div>
+        <div class="grid-2">
+          <label>
+            Formule a appliquer
+            <select name="subscriptionType">
+              <option value="">Aucun abonnement</option>
+              <% subscriptionPlans.forEach((plan) => { %>
+                <option value="<%= plan.code %>" <%= user.subscriptionType === plan.code ? 'selected' : '' %>>
+                  <%= plan.name %> - <%= helpers.eurosFromCents(plan.amount) %>
+                </option>
+              <% }) %>
+            </select>
+          </label>
+          <label>
+            Actif jusqu'au
+            <input type="date" name="subscriptionEndDate" value="<%= user.subscriptionEndDate ? user.subscriptionEndDate.toISOString().slice(0, 10) : '' %>" />
+          </label>
+        </div>
+        <p class="form-help">Pour activer un abonnement, choisissez une formule et une date de fin future. Pour le desactiver, choisissez "Aucun abonnement".</p>
+
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+      </form>
+    </div>
+
+    <% if (currentUser.id !== user.id) { %>
+      <div class="card danger-zone">
+        <h2>Zone dangereuse</h2>
+        <p>Supprimer ce compte retirera l'utilisateur de la base de donnees.</p>
+        <form
+          method="post"
+          action="/admin/users/<%= user.id %>?_method=DELETE"
+          onsubmit="return confirm('Supprimer definitivement cet utilisateur ? Cette action est irreversible.');"
+        >
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button class="btn btn-danger" type="submit">Supprimer l'utilisateur</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</section>

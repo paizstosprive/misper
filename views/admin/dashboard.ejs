@@ -5,12 +5,36 @@
       <p>Vue d'ensemble du produit.</p>
     </div>
     <div class="grid-3">
-      <article class="card"><h3>Utilisateurs</h3><p><strong><%= metrics.users %></strong></p></article>
-      <article class="card"><h3>Abonnes actifs</h3><p><strong><%= metrics.activeSubscribers %></strong></p></article>
-      <article class="card"><h3>Paiements</h3><p><strong><%= metrics.payments %></strong></p></article>
-      <article class="card"><h3>Questions</h3><p><strong><%= metrics.questions %></strong></p></article>
-      <article class="card"><h3>Revenus</h3><p><strong><%= helpers.eurosFromCents(metrics.revenue) %></strong></p></article>
-      <article class="card"><h3>Actions</h3><p><a href="/admin/questions">Gerer les questions</a></p></article>
+      <a class="card admin-tile" href="/admin/users">
+        <h3>Utilisateurs</h3>
+        <p><strong><%= metrics.users %></strong></p>
+        <span>Voir et modifier</span>
+      </a>
+      <a class="card admin-tile" href="/admin/users?filter=active">
+        <h3>Abonnes actifs</h3>
+        <p><strong><%= metrics.activeSubscribers %></strong></p>
+        <span>Gerer les acces</span>
+      </a>
+      <a class="card admin-tile" href="/admin/payments">
+        <h3>Paiements</h3>
+        <p><strong><%= metrics.payments %></strong></p>
+        <span>Voir les transactions</span>
+      </a>
+      <a class="card admin-tile" href="/admin/questions">
+        <h3>Questions</h3>
+        <p><strong><%= metrics.questions %></strong></p>
+        <span>Gerer la banque</span>
+      </a>
+      <a class="card admin-tile" href="/admin/payments">
+        <h3>Revenus</h3>
+        <p><strong><%= helpers.eurosFromCents(metrics.revenue) %></strong></p>
+        <span>Details paiement</span>
+      </a>
+      <div class="card admin-tile admin-actions">
+        <h3>Actions</h3>
+        <a href="/admin/questions" class="btn btn-primary">Gerer les questions</a>
+        <a href="/admin/users" class="btn btn-ghost">Gerer les utilisateurs</a>
+      </div>
     </div>
   </div>
 </section>

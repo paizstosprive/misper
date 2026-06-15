@@ -1,6 +1,7 @@
 const { Payment } = require('../models');
 const stripeService = require('../services/stripeService');
 const { activateSubscription } = require('../services/subscriptionService');
+const { sendSubscriptionActivatedEmail } = require('../services/emailService');
 
 async function stripeWebhook(req, res) {
   try {
@@ -26,6 +27,15 @@ async function stripeWebhook(req, res) {
           status: 'paid',
           paidAt: new Date()
         });
+
+        await payment.reload({ include: ['user'] });
+        if (payment.user) {
+          sendSubscriptionActivatedEmail({
+            user: payment.user,
+            subscription,
+            payment
+          });
+        }
       }
     }
 

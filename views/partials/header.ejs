@@ -8,6 +8,7 @@
       <a href="/pricing">Tarifs</a>
       <% if (isAuthenticated) { %>
         <a href="/dashboard">Dashboard</a>
+        <a href="/settings">Parametres</a>
         <% if (isAdmin) { %><a href="/admin">Admin</a><% } %>
         <a href="/quiz/start" class="btn btn-ghost">Lancer un quiz</a>
         <form action="/logout" method="post" class="inline-form">

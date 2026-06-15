@@ -1,10 +1,16 @@
 <section class="section">
   <div class="container">
-    <div class="section-head"><h1>Paiements</h1></div>
+    <div class="section-head row-between">
+      <div>
+        <h1>Paiements</h1>
+        <p>Historique des transactions Stripe.</p>
+      </div>
+      <a class="btn btn-ghost" href="/admin">Retour admin</a>
+    </div>
     <div class="card table-card">
       <table>
         <thead>
-          <tr><th>ID</th><th>Utilisateur</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+          <tr><th>ID</th><th>Utilisateur</th><th>Montant</th><th>Statut</th><th>Date</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <% payments.forEach((payment) => { %>
@@ -14,6 +20,13 @@
               <td><%= helpers.eurosFromCents(payment.amount) %></td>
               <td><%= payment.status %></td>
               <td><%= helpers.formatDate(payment.paidAt || payment.createdAt) %></td>
+              <td>
+                <% if (payment.user) { %>
+                  <a class="btn btn-ghost btn-small" href="/admin/users/<%= payment.user.id %>/edit">Utilisateur</a>
+                <% } else { %>
+                  N/A
+                <% } %>
+              </td>
             </tr>
           <% }) %>
         </tbody>

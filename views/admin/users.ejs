@@ -1,10 +1,19 @@
 <section class="section">
   <div class="container">
-    <div class="section-head"><h1>Utilisateurs</h1></div>
+    <div class="section-head row-between">
+      <div>
+        <h1>Utilisateurs</h1>
+        <p>Consulte et modifie les comptes.</p>
+      </div>
+      <div class="inline-filters">
+        <a class="btn <%= selectedFilter ? 'btn-ghost' : 'btn-primary' %>" href="/admin/users">Tous</a>
+        <a class="btn <%= selectedFilter === 'active' ? 'btn-primary' : 'btn-ghost' %>" href="/admin/users?filter=active">Abonnes actifs</a>
+      </div>
+    </div>
     <div class="card table-card">
       <table>
         <thead>
-          <tr><th>ID</th><th>Nom</th><th>Email</th><th>Role</th><th>Abonnement</th></tr>
+          <tr><th>ID</th><th>Nom</th><th>Email</th><th>Role</th><th>Abonnement</th><th>Fin</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <% users.forEach((user) => { %>
@@ -14,6 +23,8 @@
               <td><%= user.email %></td>
               <td><%= user.role %></td>
               <td><%= user.hasActiveSubscription ? 'Actif' : 'Non' %></td>
+              <td><%= user.subscriptionEndDate ? helpers.formatDate(user.subscriptionEndDate) : 'N/A' %></td>
+              <td><a class="btn btn-ghost btn-small" href="/admin/users/<%= user.id %>/edit">Modifier</a></td>
             </tr>
           <% }) %>
         </tbody>

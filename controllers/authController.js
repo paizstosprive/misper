@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../models');
+const { sendRegistrationEmail } = require('../services/emailService');
 
 function showRegister(req, res) {
   res.render('auth/register', {
@@ -11,12 +12,23 @@ function showRegister(req, res) {
 
 async function register(req, res) {
   const { firstName, lastName, email, password } = req.body;
+  const normalizedEmail = email.toLowerCase();
+
+  const existingUser = await User.findOne({ where: { email: normalizedEmail } });
+  if (existingUser) {
+    return res.status(422).render('auth/register', {
+      title: 'Inscription',
+      errors: [{ msg: 'Cette adresse email est deja utilisee.' }],
+      oldInput: { firstName, lastName, email }
+    });
+  }
+
   const passwordHash = await bcrypt.hash(password, 12);
 
   const user = await User.create({
     firstName,
     lastName,
-    email: email.toLowerCase(),
+    email: normalizedEmail,
     passwordHash
   });
 
@@ -32,6 +44,7 @@ async function register(req, res) {
   };
 
   req.flash('success', 'Votre compte a ete cree.');
+  sendRegistrationEmail(user);
   res.redirect('/dashboard');
 }
 

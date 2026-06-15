@@ -1,0 +1,102 @@
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Parametres</h1>
+      <p>Gerez votre compte, votre acces et vos informations.</p>
+    </div>
+
+    <div class="settings-grid">
+      <article class="card form-card settings-panel">
+        <h2>Profil</h2>
+        <form method="post" action="/settings/profile" class="stack">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="grid-2">
+            <label>
+              Prenom
+              <input type="text" name="firstName" value="<%= user.firstName %>" required />
+            </label>
+            <label>
+              Nom
+              <input type="text" name="lastName" value="<%= user.lastName %>" required />
+            </label>
+          </div>
+          <label>
+            Email
+            <input type="email" name="email" value="<%= user.email %>" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Enregistrer le profil</button>
+        </form>
+      </article>
+
+      <article class="card form-card settings-panel">
+        <h2>Mot de passe</h2>
+        <form method="post" action="/settings/password" class="stack">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <label>
+            Mot de passe actuel
+            <input type="password" name="currentPassword" required />
+          </label>
+          <label>
+            Nouveau mot de passe
+            <input type="password" name="newPassword" minlength="6" required />
+          </label>
+          <label>
+            Confirmer le nouveau mot de passe
+            <input type="password" name="confirmPassword" minlength="6" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Changer le mot de passe</button>
+        </form>
+      </article>
+
+      <article class="card settings-panel">
+        <h2>Abonnement</h2>
+        <% if (user.hasActiveSubscription) { %>
+          <p>Votre acces est actif jusqu'au <strong><%= helpers.formatDate(user.subscriptionEndDate) %></strong>.</p>
+        <% } else { %>
+          <p>Vous n'avez pas d'abonnement actif.</p>
+        <% } %>
+        <div class="settings-actions">
+          <a class="btn btn-primary" href="/pricing">Voir les offres</a>
+          <a class="btn btn-ghost" href="/dashboard">Retour au dashboard</a>
+        </div>
+      </article>
+
+      <article class="card settings-panel">
+        <h2>Donnees</h2>
+        <p>Vous pouvez demander la suppression de votre compte. La demande sera traitee par l'administration.</p>
+        <form method="post" action="/settings/delete-request" class="settings-actions">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button class="btn btn-ghost" type="submit">Demander la suppression</button>
+        </form>
+      </article>
+    </div>
+
+    <div class="card table-card settings-history">
+      <div class="row-between">
+        <div>
+          <h2>Paiements</h2>
+          <p>Vos derniers paiements enregistres.</p>
+        </div>
+        <a class="btn btn-ghost" href="/pricing">Renouveler</a>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Montant</th><th>Statut</th><th>Formule</th></tr>
+        </thead>
+        <tbody>
+          <% if (!payments.length) { %>
+            <tr><td colspan="4">Aucun paiement pour le moment.</td></tr>
+          <% } %>
+          <% payments.forEach((payment) => { %>
+            <tr>
+              <td><%= helpers.formatDate(payment.paidAt || payment.createdAt) %></td>
+              <td><%= helpers.eurosFromCents(payment.amount) %></td>
+              <td><%= payment.status %></td>
+              <td><%= payment.metadata?.planCode || 'N/A' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
