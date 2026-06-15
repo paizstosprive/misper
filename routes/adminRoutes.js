@@ -17,5 +17,6 @@ router.get('/users/:id/edit', adminController.editUser);
 router.put('/users/:id', adminController.updateUser);
 router.delete('/users/:id', adminController.deleteUser);
 router.get('/payments', adminController.listPayments);
+router.post('/email-test', adminController.sendAdminTestEmail);
 
 module.exports = router;

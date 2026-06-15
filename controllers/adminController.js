@@ -1,5 +1,6 @@
 const { Question, User, Payment, Subscription } = require('../models');
 const { CHAPTERS, SUBSCRIPTION_PLANS } = require('../utils/constants');
+const { sendTestEmail } = require('../services/emailService');
 
 async function listQuestions(req, res) {
   const where = req.query.chapter ? { chapterCode: req.query.chapter } : {};
@@ -172,6 +173,17 @@ async function listPayments(req, res) {
   res.render('admin/payments', { title: 'Paiements', payments });
 }
 
+async function sendAdminTestEmail(req, res) {
+  const result = await sendTestEmail(req.session.user.email);
+  if (result.ok) {
+    req.flash('success', `Email test envoye a ${req.session.user.email}.`);
+  } else {
+    req.flash('error', `Email test non envoye: ${result.error}`);
+  }
+
+  return res.redirect('/admin');
+}
+
 module.exports = {
   listQuestions,
   newQuestion,
@@ -183,5 +195,6 @@ module.exports = {
   editUser,
   updateUser,
   deleteUser,
-  listPayments
+  listPayments,
+  sendAdminTestEmail
 };

@@ -40,12 +40,13 @@ function getFromAddress() {
 async function sendMail({ to, subject, text, html, attachments = [] }) {
   const mailer = getTransporter();
   if (!mailer) {
-    console.warn('Email non envoye: configuration SMTP absente.');
-    return;
+    const message = 'Configuration SMTP absente.';
+    console.warn(`Email non envoye: ${message}`);
+    return { ok: false, error: message };
   }
 
   try {
-    await mailer.sendMail({
+    const info = await mailer.sendMail({
       from: getFromAddress(),
       to,
       subject,
@@ -53,8 +54,10 @@ async function sendMail({ to, subject, text, html, attachments = [] }) {
       html,
       attachments
     });
+    return { ok: true, messageId: info.messageId };
   } catch (error) {
     console.error('Erreur envoi email:', error.message);
+    return { ok: false, error: error.message };
   }
 }
 
@@ -270,8 +273,31 @@ async function sendDeletionRequestEmail(user) {
   }
 }
 
+async function sendTestEmail(to) {
+  return sendMail({
+    to,
+    subject: 'Test email Permis-Go',
+    text: [
+      'Ceci est un email de test envoye depuis le back-office Permis-Go.',
+      '',
+      'Si vous le recevez, la configuration SMTP Railway fonctionne.'
+    ].join('\n'),
+    html: renderEmailLayout({
+      eyebrow: 'Test SMTP',
+      title: 'Email de test',
+      intro: 'Ceci est un email de test envoye depuis le back-office Permis-Go.',
+      body: '<p style="margin: 0;">Si vous recevez ce message, la configuration SMTP Railway fonctionne correctement.</p>',
+      ctaLabel: 'Ouvrir Permis-Go',
+      ctaUrl: dashboardUrl()
+    }),
+    attachments: [logoAttachment()]
+  });
+}
+
 module.exports = {
+  isEmailEnabled,
   sendRegistrationEmail,
   sendSubscriptionActivatedEmail,
-  sendDeletionRequestEmail
+  sendDeletionRequestEmail,
+  sendTestEmail
 };
